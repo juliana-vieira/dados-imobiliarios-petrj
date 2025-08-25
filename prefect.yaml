@@ -7,11 +7,7 @@ name: TCC
 prefect-version: 3.4.14
 
 # build section allows you to manage and build docker images
-build: 
-- prefect_docker.deployments.steps.build_docker_image:
-    image_name: "meu-registro/minha-imagem"
-    tag: "latest"
-    dockerfile: "Dockerfile"
+build: null
 
 # push section allows you to manage if and how this project is uploaded to remote locations
 push: null
@@ -22,6 +18,9 @@ pull:
     repository: https://github.com/juliana-vieira/dados-imobiliarios-petrj.git
     branch: main
     access_token: null
+- prefect.deployments.steps.run_shell_script:
+    script: |
+      pip install -r requirements.txt
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
