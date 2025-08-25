@@ -19,9 +19,7 @@ pull:
     branch: main
     access_token: null
 - prefect.deployments.steps.run_shell_script:
-    script: |
-      cd dados-imobiliarios-petrj
-      pip install -r requirements.txt
+    script: cd dados-imobiliarios-petrj && pip install -r requirements.txt
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
