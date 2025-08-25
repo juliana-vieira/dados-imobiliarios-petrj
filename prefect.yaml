@@ -7,7 +7,11 @@ name: TCC
 prefect-version: 3.4.14
 
 # build section allows you to manage and build docker images
-build: null
+build: 
+- prefect_docker.deployments.steps.build_docker_image:
+    image_name: "meu-registro/minha-imagem"
+    tag: "latest"
+    dockerfile: "Dockerfile"
 
 # push section allows you to manage if and how this project is uploaded to remote locations
 push: null
