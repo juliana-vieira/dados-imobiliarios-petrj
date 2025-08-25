@@ -10,11 +10,7 @@ prefect-version: 3.4.14
 build: null
 
 # push section allows you to manage if and how this project is uploaded to remote locations
-push:
-  - prefect.deployments.steps.run_shell_script:
-      id: install-dependencies
-      script: pip install -r requirements.txt
-      stream_output: true
+push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
@@ -22,6 +18,7 @@ pull:
     repository: https://github.com/juliana-vieira/dados-imobiliarios-petrj.git
     branch: main
     access_token: null
+    script: pip install -r requirements.txt
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
