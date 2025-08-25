@@ -45,7 +45,7 @@ def extrair_links_anuncios(base_url):
 
     links = []
 
-    for i in range(1, 2):
+    for i in range(1, 50):
         url = f'{base_url}&o={i}'
         soup = obter_html(url)
         anuncios = soup.find_all('a', class_="olx-adcard__link")
@@ -168,7 +168,7 @@ def scrape(links):
 
     return dados_completos
 
-@flow
+@flow()
 def pipeline_olx():
 
     links = extrair_links_anuncios(base_url)
