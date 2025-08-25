@@ -36,6 +36,6 @@ deployments:
   entrypoint: "web-scraping.py:pipeline_olx"
   parameters: {}
   work_pool:
-    name: "default-agent-pool"
+    name: "olx-web-scraping"
     work_queue_name: "default"
     job_variables: {}
