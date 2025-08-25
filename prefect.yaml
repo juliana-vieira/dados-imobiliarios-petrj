@@ -18,7 +18,9 @@ pull:
     repository: https://github.com/juliana-vieira/dados-imobiliarios-petrj.git
     branch: main
     access_token: null
-    script: pip install -r requirements.txt
+- prefect.deployments.steps.run_shell_script:
+    script: |
+      pip install -r requirements.txt
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
