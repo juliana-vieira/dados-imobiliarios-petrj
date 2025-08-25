@@ -188,7 +188,7 @@ def pipeline_olx():
     
     data = datetime.datetime.now()
 
-    arquivo_path = f'data/imoveis_{data}.json'
+    arquivo_path = f'imoveis_{data}.json'
     with open(arquivo_path, 'w') as f:
         json.dump(dados, f)
 
