@@ -1,0 +1,41 @@
+# Welcome to your prefect.yaml file! You can use this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
+
+# Generic metadata about this project
+name: TCC
+prefect-version: 3.4.14
+
+# build section allows you to manage and build docker images
+build: null
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push:
+  - prefect.deployments.steps.run_shell_script:
+      id: install-dependencies
+      script: pip install -r requirements.txt
+      stream_output: true
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.deployments.steps.git_clone:
+    repository: https://github.com/juliana-vieira/dados-imobiliarios-petrj.git
+    branch: main
+    access_token: null
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name: "web-scraping-olx"
+  version: null
+  tags: []
+  description: null
+  schedule: {
+    cron: "0 10 * * 1"
+  }
+  flow_name: "pipeline_olx"
+  entrypoint: "web-scraping.py:pipeline_olx"
+  parameters: {}
+  work_pool:
+    name: "default-agent-pool"
+    work_queue_name: "default"
+    job_variables: {}
