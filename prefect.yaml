@@ -28,6 +28,7 @@ deployments:
   work_pool:
     name: "olx-web-scraping"
     work_queue_name: "default"
-    job_variables: {}
-  storage:
-      block: github/github-dados-imobiliarios
+    job_variables:
+      env:
+        EXTRA_PIP_PACKAGES: "requests beautifulsoup4 prefect-aws pandas"
+  
