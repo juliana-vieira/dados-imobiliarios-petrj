@@ -13,14 +13,7 @@ build: null
 push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
-pull:
-- prefect.deployments.steps.git_clone:
-    repository: https://github.com/juliana-vieira/dados-imobiliarios-petrj.git
-    branch: main
-    access_token: null
-- prefect.deployments.steps.run_shell_script:
-    script: pip install -r requirements.txt
-    directory: dados-imobiliarios-petrj
+pull: null
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -36,3 +29,5 @@ deployments:
     name: "olx-web-scraping"
     work_queue_name: "default"
     job_variables: {}
+  storage:
+      block: github/github-dados-imobiliarios
