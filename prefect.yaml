@@ -29,9 +29,7 @@ deployments:
   version: null
   tags: []
   description: null
-  schedule: {
-    cron: "0 10 * * 1"
-  }
+  schedule:
   flow_name: "pipeline_olx"
   entrypoint: "web-scraping.py:pipeline_olx"
   parameters: {}
