@@ -1,10 +1,12 @@
 # %%
 
-import requests, time, random, re, json
+import requests, time, random, re, json, datetime, os
 
 from prefect import flow, task
 from bs4 import BeautifulSoup
 from prefect.blocks.system import Secret
+from prefect_aws import AwsCredentials
+from prefect_aws.s3 import S3Bucket
 
 cookies = {
     'r_id': Secret.load('r-id').get(),
@@ -156,17 +158,26 @@ def extrair_info_imovel(link):
 def scrape(links):
 
     dados_completos = []
-
+    
     for link in links:
         resultado = extrair_info_imovel(link)
         print(resultado)
         dados_completos.append(resultado)
 
-        delay = random.uniform(2, 5)
-        print(f"Esperando {delay:.1f} segundos...")
-        time.sleep(delay)
+    delay = random.uniform(2, 5)
+    print(f"Esperando {delay:.1f} segundos...")
+    time.sleep(delay)
 
     return dados_completos
+
+@task
+def upload_arquivo_s3(arquivo):
+
+    s3_bucket_block = S3Bucket.load("s3-olx")
+    
+    s3_bucket_path = s3_bucket_block.upload_from_path(arquivo)
+
+    print(s3_bucket_path)
 
 @flow()
 def pipeline_olx():
@@ -175,8 +186,13 @@ def pipeline_olx():
 
     dados = scrape(links)
     
-    with open('dados.json', 'w') as f:
+    data = datetime.datetime.now()
+
+    arquivo_path = f'data/imoveis_{data}.json'
+    with open(arquivo_path, 'w') as f:
         json.dump(dados, f)
+
+    upload_arquivo_s3(arquivo_path)
 
 if __name__ == "__main__":
     pipeline_olx()
