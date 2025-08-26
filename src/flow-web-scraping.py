@@ -1,42 +1,19 @@
 # %%
 
-import requests, time, random, re, json, datetime, os
+import requests, time, random, re, json, datetime, pytz
 
 from prefect import flow, task
 from bs4 import BeautifulSoup
-from prefect.blocks.system import Secret
-from prefect_aws import AwsCredentials
 from prefect_aws.s3 import S3Bucket
+from load_credentials import Credentials
 
-cookies = {
-    'r_id': Secret.load('r-id').get(),
-    'nl_id': Secret.load('nl-id').get(),
-    'cf_clearance': Secret.load('cf-clearance').get(),
-    '_cfuvid': Secret.load('cfuvid').get(),
-    'TestAB_Groups': Secret.load('testab-groups').get(),
-    '__cf_bm': Secret.load('cf-bm').get(),
-}
-
-headers = {
-    'User-Agent': Secret.load('user-agent').get(),
-    'Accept': Secret.load('accept').get(),
-    'Accept-Language': Secret.load('accept-language').get(),
-    'Referer': Secret.load('referer').get(),
-    'Sec-GPC': '1',
-    'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'same-origin',
-    'Priority': 'u=0, i',
-}
-
-base_url = 'https://www.olx.com.br/imoveis/aluguel/estado-rj/serra-angra-dos-reis-e-regiao/petropolis?ret=1020&ret=1040'
+credenciais = Credentials()
+base_url = credenciais.base_url["base_url"]
 
 @task(retries=3, retry_delay_seconds=10, timeout_seconds=45)
 def obter_html(url):
 
-    response = requests.get(url, cookies=cookies, headers=headers, timeout=30)
+    response = requests.get(url, cookies=credenciais.cookies, headers=credenciais.headers, timeout=30)
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -47,7 +24,7 @@ def extrair_links_anuncios(base_url):
 
     links = []
 
-    for i in range(1, 50):
+    for i in range(1, 2):
         url = f'{base_url}&o={i}'
         soup = obter_html(url)
         anuncios = soup.find_all('a', class_="olx-adcard__link")
@@ -105,7 +82,7 @@ def extrair_info_imovel(link):
             if item in ['Aluguel', 'Condomínio', 'IPTU']:
                 chave = item
             elif item.startswith("R$"):
-                valor = item.strip("R$ ")
+                valor = item
 
             if chave == None:
                 continue
@@ -158,11 +135,12 @@ def extrair_info_imovel(link):
 def scrape(links):
 
     dados_completos = []
+
+    link = links[0]
     
-    for link in links:
-        resultado = extrair_info_imovel(link)
-        print(resultado)
-        dados_completos.append(resultado)
+    resultado = extrair_info_imovel(link)
+    print(resultado)
+    dados_completos.append(resultado)
 
     delay = random.uniform(2, 5)
     print(f"Esperando {delay:.1f} segundos...")
@@ -173,9 +151,12 @@ def scrape(links):
 @task
 def upload_arquivo_s3(arquivo):
 
-    s3_bucket_block = S3Bucket.load("s3-olx")
+    s3_bucket = S3Bucket(
+        bucket_name="olx-raw",
+        credentials=credenciais.aws_credentials
+    )
     
-    s3_bucket_path = s3_bucket_block.upload_from_path(arquivo)
+    s3_bucket_path = s3_bucket.upload_from_path(arquivo)
 
     print(s3_bucket_path)
 
@@ -186,15 +167,14 @@ def pipeline_olx():
 
     dados = scrape(links)
     
-    data = datetime.datetime.now()
+    data = datetime.datetime.now(pytz.timezone('America/Sao_Paulo'))
+    nome_arquivo = f'imoveis_{data}.json'
 
-    arquivo_path = f'imoveis_{data}.json'
-    with open(arquivo_path, 'w') as f:
+    with open(nome_arquivo, 'w') as f:
         json.dump(dados, f)
 
-    upload_arquivo_s3(arquivo_path)
+    upload_arquivo_s3(nome_arquivo)
 
 if __name__ == "__main__":
-    pipeline_olx()
 
-# %%
+    pipeline_olx()
