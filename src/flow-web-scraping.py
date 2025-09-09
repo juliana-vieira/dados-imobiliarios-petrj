@@ -1,6 +1,6 @@
 # %%
 
-import requests, time, random, re, json, datetime, pytz
+import requests, time, random, re, json, datetime, pytz, os
 
 from prefect import flow, task
 from bs4 import BeautifulSoup
@@ -151,8 +151,11 @@ def upload_arquivo_s3(arquivo):
         bucket_name="olx-raw",
         credentials=credenciais.aws_credentials
     )
-    
-    s3_bucket_path = s3_bucket.upload_from_path(arquivo)
+
+    s3_bucket_path = s3_bucket.upload_from_path(
+        from_path=arquivo,
+        to_path=f"raw/{os.path.basename(arquivo)}"
+    )
 
     print(s3_bucket_path)
 
