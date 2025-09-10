@@ -83,14 +83,16 @@ def extrair_info_imovel(link):
         for item in itens:
             if item in ['Aluguel', 'Condomínio', 'IPTU']:
                 chave = item
+
             elif item.startswith("R$"):
                 valor = item
+
             if chave == None:
                 continue
 
             precos[chave] = valor
 
-        imovel['precos'] = precos 
+        imovel['precos'] = [precos] 
 
     else:
         imovel['precos'] = "N/A"
