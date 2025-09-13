@@ -8,7 +8,7 @@ from prefect_aws.s3 import S3Bucket
 from load_credentials import Credentials
 
 credenciais = Credentials()
-base_url = credenciais.base_url
+base_url = credenciais.base_url["base_url"]
 max_range = 100
 
 def aguardar():
