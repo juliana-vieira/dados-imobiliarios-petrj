@@ -23,7 +23,7 @@ deployments:
   description: null
   schedule:
   flow_name: "pipeline_olx"
-  entrypoint: "prefect/src/flow-web-scraping.py:pipeline_olx"
+  entrypoint: "prefect/flows/flow-web-scraping.py:pipeline_olx"
   parameters: {}
   work_pool:
     name: "olx-web-scraping"
