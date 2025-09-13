@@ -92,7 +92,7 @@ def extrair_info_imovel(link):
 
             precos[chave] = valor
 
-        imovel['precos'] = [precos] 
+        imovel['precos'] = precos
 
     else:
         imovel['precos'] = "N/A"
@@ -169,10 +169,11 @@ def pipeline_olx():
     dados = scrape(links)
     
     data = datetime.datetime.now(pytz.timezone('America/Sao_Paulo'))
-    nome_arquivo = f'imoveis_{data}.json'
+    nome_arquivo = f'imoveis_{data}.jsonl'
 
-    with open(nome_arquivo, 'w') as f:
-        json.dump(dados, f)
+    with open(nome_arquivo, 'w', encoding='utf-8') as f:
+        for registro in dados:
+            f.write(json.dumps(registro, ensure_ascii=False) + '\n')
 
     upload_arquivo_s3(nome_arquivo)
 
