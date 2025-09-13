@@ -1,6 +1,6 @@
-from prefect.blocks.system import Secret
 from prefect_aws import AwsCredentials
-from prefect.variables import Variable
+from dotenv import load_dotenv
+import os
 
 class Credentials:
 
@@ -9,25 +9,26 @@ class Credentials:
         self.get_headers()
         self.get_aws_credentials()
         self.get_base_url()
+        load_dotenv()
 
     def get_cookies(self):
 
         self.cookies = {
-            'r_id': Secret.load('r-id').get(),
-            'nl_id': Secret.load('nl-id').get(),
-            'cf_clearance': Secret.load('cf-clearance').get(),
-            '_cfuvid': Secret.load('cfuvid').get(),
-            'TestAB_Groups': Secret.load('testab-groups').get(),
-            '__cf_bm': Secret.load('cf-bm').get(),
+            'r_id': os.getenv('R_ID'),
+            'nl_id': os.getenv('NL-Id'),
+            'cf_clearance': os.getenv('CF-CLEARANCE'),
+            '_cfuvid': os.getenv('_CFUVID'),
+            'TestAB_Groups': os.getenv('TESTAB_GROUPS'),
+            '__cf_bm': os.getenv('__CF_BM'),
         }
 
     def get_headers(self):
 
         self.headers = {
-            'User-Agent': Secret.load('user-agent').get(),
-            'Accept': Secret.load('accept').get(),
-            'Accept-Language': Secret.load('accept-language').get(),
-            'Referer': Secret.load('referer').get(),
+            'User-Agent': os.getenv('USER-AGENT'),
+            'Accept': os.getenv('ACCEPT'),
+            'Accept-Language': os.getenv('ACCEPT-LANGUAGE'),
+            'Referer': os.getenv('REFERER'),
             'Sec-GPC': '1',
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
@@ -43,4 +44,4 @@ class Credentials:
 
     def get_base_url(self):
     
-        self.base_url = Variable.get("base_url")
+        self.base_url = "https://www.olx.com.br/imoveis/aluguel/estado-rj/serra-angra-dos-reis-e-regiao/petropolis?ret=1020&ret=1040"
