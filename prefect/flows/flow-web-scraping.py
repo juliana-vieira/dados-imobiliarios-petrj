@@ -61,20 +61,20 @@ def extrair_info_imovel(link):
     imovel['cod_anuncio'] = link.split("-")[-1]
 
     # Título e Descrição
-    div_desc = soup.find('div', id='description-title').find_all({'span': 'data-ds-component="DS-Text'})
+    try:
+        div_desc = soup.find('div', id='description-title').find_all({'span': 'data-ds-component="DS-Text'})
 
-    if div_desc:
         imovel['titulo'] = div_desc[0].text
         imovel['descricao'] = div_desc[1].text    
 
-    else:
+    except:
         imovel['titulo'] = "N/A"
         imovel['descricao'] = "N/A"
 
     # Valores de Aluguel, IPTU e Condomínio
-    span_precos = soup.find('div', id='price-box-container').find_all('span')
+    try:
+        span_precos = soup.find('div', id='price-box-container').find_all('span')
 
-    if span_precos:
         itens = [valor.text for valor in span_precos] 
         precos = {}
         chave = None
@@ -94,16 +94,16 @@ def extrair_info_imovel(link):
 
         imovel['precos'] = precos
 
-    else:
+    except:
         imovel['precos'] = "N/A"
 
     # Endereço do imóvel
-    span_localizacao = soup.find('div', id='location').find_all('span')[1:-2]
+    try:
+        span_localizacao = soup.find('div', id='location').find_all('span')[1:-2]
 
-    if span_localizacao:
         imovel['endereco'] = [end.text for end in span_localizacao]
 
-    else:
+    except:
         imovel['endereco'] = "N/A"
 
     # Características do imóvel e do condomínio
@@ -125,11 +125,11 @@ def extrair_info_imovel(link):
     # Data do anúncio
     regex_data = r'\b\d{2}/\d{2}\s*às\s*\d{2}:\d{2}\b'
 
-    data = re.findall(regex_data, texto_pagina)        
-    if data:
+    try:
+        data = re.findall(regex_data, texto_pagina)        
         imovel['data_anuncio'] = str(data[0])
 
-    else:
+    except:
         imovel['data_anuncio'] = "N/A"
 
     return imovel
