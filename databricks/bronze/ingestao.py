@@ -1,21 +1,20 @@
 # Databricks notebook source
 # DBTITLE 1,SETUP
-import sys
-
-sys.path.insert(0, "../lib/") # Obtenção dos módulos da pasta lib
-
-import ingestors
-import db
-
-# Definição de atributos
-table = 'imoveis'
-catalog = 'bronze'
-database = 'olx'
-idField = 'cod_anuncio'
-checkpoint_path = f"/Volumes/raw/lh-projeto-olx/full-load/checkpoints/"
-
-# Configuração do timestamp para UTC-3 (horário de Brasília)
-spark.conf.set("spark.sql.session.timeZone", "America/Sao_Paulo")
+# MAGIC %pip install ../../lib/
+# MAGIC # Instalação dos módulos ingestors.py e db.py da pasta lib
+# MAGIC
+# MAGIC import ingestors
+# MAGIC import db 
+# MAGIC
+# MAGIC # Definição de atributos
+# MAGIC table = 'imoveis'
+# MAGIC catalog = 'bronze'
+# MAGIC database = 'olx'
+# MAGIC idField = 'cod_anuncio'
+# MAGIC checkpoint_path = f"/Volumes/raw/lh-projeto-olx/full-load/checkpoints/"
+# MAGIC
+# MAGIC # Configuração do timestamp para UTC-3 (horário de Brasília)
+# MAGIC spark.conf.set("spark.sql.session.timeZone", "America/Sao_Paulo")
 
 # COMMAND ----------
 
@@ -39,3 +38,9 @@ if not db.table_exists(catalog, database, table, spark):
 print("Executando stream...")
 ingestao = ingestors.IngestaoFullBronzeStreaming(table, idField, spark)
 ingestao.auto()
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC SELECT DISTINCT * FROM bronze.olx.imoveis
